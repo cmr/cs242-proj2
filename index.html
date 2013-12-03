@@ -1,0 +1,84 @@
+<!doctype html>
+<html ng-app="songbrowser">
+<head>
+<meta charset="utf-8"/>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular-route.js"></script>
+<script>
+var data_provider = function($http) {
+	this.$http = $http
+}
+
+data_provider.prototype = {
+	"list_genres": function() {
+		return this.$http.get("/all_genres");
+	},
+	"get_songs_for_genre": function(genre) {
+		return this.$http.get("/get_songs?genre=" + genre);
+	}
+}
+
+app = angular.module("songbrowser", ['ngRoute']);
+
+app.factory("data", function($http) { return new data_provider($http); });
+
+function GenreListController($scope, data) {
+ 	$scope.genres = undefined;
+	data.list_genres().success(function(genres) { $scope.genres = genres; });
+}
+
+function GenreDetailsController($scope, data, $routeParams) {
+	$scope.songs = undefined;
+	data.get_songs_for_genre($routeParams.genre).success(function(songs) { $scope.songs = songs });
+}
+
+function CreateSongController($scope) {
+	// do stuff
+}
+
+app.config(function($routeProvider) {
+	// $locationProvider.html5Mode(true);
+	var genresPage  = { templateUrl: 'genre_list.html', controller: GenreListController };
+	var genrePage   = { templateUrl: 'genre_details.html', controller: GenreDetailsController };
+	var addSongPage = { templateUrl: 'create_song.html', controller: CreateSongController };
+	$routeProvider.when('/', genresPage);
+	$routeProvider.when('/genre/:genre', genrePage);
+	$routeProvider.when('/create', addSongPage);
+	$routeProvider.otherwise({redirectTo: '/'});
+});
+</script>
+
+<script type="text/ng-template" id="genre_list.html">
+	<div ng-hide="genres" >
+		Loading Genres...
+	</div>
+
+	<div ng-repeat="genre in genres">
+		<a ng-href="#/genre/{{genre}}" class="genre_link">{{ genre }}</a>
+	</div>
+</script>
+
+<script type="text/ng-template" id="genre_details.html">
+	<a ng-href="/">Back to Genre List</a>
+
+	<div ng-hide="songs">
+		Loading Songs...
+	</div>
+
+	<div ng-repeat="song in songs">
+		<div class="song">
+			<div class="title">{{ song.title }}</div>
+			<div class="artist">{{ song.arist }}</div>
+			<div class="duration">{{ song.duration}} seconds</div>
+			<div class="filetype">{{ song.audioFiletype }}</div>
+			<div class="filename">{{ song.audioFilename }}</div>
+		</div>
+	</div>
+</script>
+</head>
+<body>
+<div ng-view />
+</body>
+</html>
