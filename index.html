@@ -1,84 +1,120 @@
-<!doctype html>
+<!doctype html >
 <html ng-app="songbrowser">
-<head>
-<meta charset="utf-8"/>
+	<head>
+		<meta charset="utf-8"/>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular-route.js"></script>
-<script>
-var data_provider = function($http) {
-	this.$http = $http
-}
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css">
+		<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
 
-data_provider.prototype = {
-	"list_genres": function() {
-		return this.$http.get("/all_genres");
-	},
-	"get_songs_for_genre": function(genre) {
-		return this.$http.get("/get_songs?genre=" + genre);
-	}
-}
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular-route.js"></script>
 
-app = angular.module("songbrowser", ['ngRoute']);
+		<script>
+			app = angular.module("songbrowser", ['ngRoute']);
 
-app.factory("data", function($http) { return new data_provider($http); });
+			var data_provider = function($http) {
+				this.$http = $http;
+			}
 
-function GenreListController($scope, data) {
- 	$scope.genres = undefined;
-	data.list_genres().success(function(genres) { $scope.genres = genres; });
-}
+			data_provider.prototype = {
+				"list_genres": function() {
+					return this.$http.get("/all_genres");
+				},
+				"get_songs_for_genre": function(genre) {
+					return this.$http.get("/get_songs?genre=" + genre);
+				},
+				"add_song_to_genre": function(genre, song) {
+					return this.$http.post("/add_song?genre=" +
+					encodeURIComponent(genre) + "&title="+encodeURIComponent(song.title)+"&artist="+encodeURIComponent(song.artist)+
+					"&duration="+encodeURIComponent(song.duration)+"&audioFilename="+encodeURIComponent(song.audioFilename)+
+					"&audioFiletype="+encodeURIComponent(song.audioFiletype));
+				}
+			}
 
-function GenreDetailsController($scope, data, $routeParams) {
-	$scope.songs = undefined;
-	data.get_songs_for_genre($routeParams.genre).success(function(songs) { $scope.songs = songs });
-}
+			app.factory("data", function($http) { return new data_provider($http); });
 
-function CreateSongController($scope) {
-	// do stuff
-}
+			function GenreListController($scope, data) {
+				$scope.genres = undefined;
+				data.list_genres().success(function(genres) { $scope.genres = genres; });
+			}
 
-app.config(function($routeProvider) {
-	// $locationProvider.html5Mode(true);
-	var genresPage  = { templateUrl: 'genre_list.html', controller: GenreListController };
-	var genrePage   = { templateUrl: 'genre_details.html', controller: GenreDetailsController };
-	var addSongPage = { templateUrl: 'create_song.html', controller: CreateSongController };
-	$routeProvider.when('/', genresPage);
-	$routeProvider.when('/genre/:genre', genrePage);
-	$routeProvider.when('/create', addSongPage);
-	$routeProvider.otherwise({redirectTo: '/'});
-});
-</script>
+			function GenreDetailsController($scope, data, $routeParams) {
+				$scope.songs = undefined;
+				data.get_songs_for_genre($routeParams.genre).success(function(songs) { $scope.songs = songs });
+			}
 
-<script type="text/ng-template" id="genre_list.html">
-	<div ng-hide="genres" >
-		Loading Genres...
-	</div>
+			function CreateSongController($scope, data) {
+				$scope.update = function() {
+					data.add_song_to_genre($scope.genre, $scope.song).success(function(ignore) { console.log(ignore); $location = "#/genre" + $scope.genre; });
+				}
+			}
 
-	<div ng-repeat="genre in genres">
-		<a ng-href="#/genre/{{genre}}" class="genre_link">{{ genre }}</a>
-	</div>
-</script>
+			app.config(function($routeProvider) {
+				// $locationProvider.html5Mode(true);
+				var genresPage  = { templateUrl: 'genre_list.html', controller: GenreListController };
+				var genrePage   = { templateUrl: 'genre_details.html', controller: GenreDetailsController };
+				var addSongPage = { templateUrl: 'create_song.html', controller: CreateSongController };
+				$routeProvider.when('/', genresPage);
+				$routeProvider.when('/genre/:genre', genrePage);
+				$routeProvider.when('/create', addSongPage);
+				$routeProvider.otherwise({redirectTo: '/'});
+			});
+		</script>
 
-<script type="text/ng-template" id="genre_details.html">
-	<a ng-href="/">Back to Genre List</a>
+		<script type="text/ng-template" id="genre_list.html">
+			<a ng-href="#/create">Add a song</a>
+			<div ng-hide="genres">
+				Loading Genres...
+			</div>
 
-	<div ng-hide="songs">
-		Loading Songs...
-	</div>
+			<div ng-repeat="genre in genres">
+				<a ng-href="#/genre/{{genre}}" class="genre_link">{{ genre }}</a>
+			</div>
+		</script>
 
-	<div ng-repeat="song in songs">
-		<div class="song">
-			<div class="title">{{ song.title }}</div>
-			<div class="artist">{{ song.arist }}</div>
-			<div class="duration">{{ song.duration}} seconds</div>
-			<div class="filetype">{{ song.audioFiletype }}</div>
-			<div class="filename">{{ song.audioFilename }}</div>
-		</div>
-	</div>
-</script>
-</head>
-<body>
-<div ng-view />
-</body>
+		<script type="text/ng-template" id="genre_details.html">
+			<a ng-href="#/">Back to Genre List</a>
+
+			<div ng-hide="songs">
+				Loading Songs...
+			</div>
+
+			<div ng-repeat="song in songs">
+				<div class="song">
+					<div class="title">{{ song.title }}</div>
+					<div class="artist">{{ song.artist }}</div>
+					<div class="duration">{{ song.duration}} seconds</div>
+					<div class="filetype">{{ song.audioFiletype }}</div>
+					<div class="filename">{{ song.audioFilename }}</div>
+				</div>
+			</div>
+		</script>
+
+		<script type="text/ng-template" id="create_song.html">
+			<a ng-href="#/">Back to Genre List</a>
+			<form novalidate class="simple-form">
+				Title: <input type="text" ng-model="song.title" /><br />
+				Artist: <input type="text" ng-model="song.artist" /><br />
+				Duration (seconds): <input type="text" ng-model="song.duration" /><br />
+				File Type: <input type="text" ng-model="song.audioFiletype" /><br />
+				File name: <input type="text" ng-model="song.audioFilename" /><br />
+				Genre: <input type="text" ng-model="genre" /><br />
+				<button ng-click="update(song)">Submit</button>
+			</form>
+		</script>
+
+	</head>
+
+	<body>
+		<nav class="navbar navbar-default" role="navigation">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#/">Genre List</a>
+				<a class="navbar-brand" href="#/create">Add Song</a>
+			</div>
+		</nav>
+		<div ng-view> </div>
+	</body>
 </html>
