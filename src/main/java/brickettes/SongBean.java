@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * A bean representing a song.
  */
-public class SongBean implements Serializable {
+public class SongBean implements Serializable, Comparable, Cloneable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -91,4 +91,37 @@ public class SongBean implements Serializable {
 	public void setAudioFilename(String audioFilename) {
 		this.audioFilename = audioFilename;
 	}
-}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this)
+			return true;
+		if (!(obj instanceof SongBean))
+			return false;
+		SongBean other = (SongBean) obj;
+		return other.title == this.title && other.artist == this.artist && other.duration == this.duration && other.audioFiletype == this.audioFiletype && other.audioFilename == this.audioFilename;
+	}
+	
+	//This implementation of compareto will have issues if the object incorporated cannot be cast to SongBean. Not sure what we should assign for default behavior in that instance.
+	@Override
+	public int compareTo(Object obj){
+		SongBean other == (SongBean) obj;
+		if (this.equals(other))
+			return 0;
+		else if (this.duration < other.duration)
+			return -1;
+		else
+			return 1;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 17;
+		hash = 31 * hash + duration;
+		hash = hash / 2;
+		hash = 31 * hash + artist.length();
+		hash = hash / 2;
+		hash = 31 * hash + title.length();
+		hash = hash / 2;
+		return hash;
+}	}
