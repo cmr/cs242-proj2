@@ -11,6 +11,23 @@
 			* {
 				font-family: Calibri, Cantarell !important;
 			}
+
+			#flash-messages {
+				list-style-type: none;
+			}
+
+			.error {
+				width: 200px;
+				display: block;
+				text-align: center;
+				color: #a94442;
+				background-color: #f2dede;
+				border-color: #ebccd1;
+				padding: 15px;
+				margin-bottom: 20px;
+				border: 1px solid transparent;
+				border-radius: 4px;
+			}
 		</style>
 		<!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css"> -->
 
@@ -24,6 +41,8 @@
 				<a class="navbar-brand" href="#/add_genre">Add Genre</a>
 			</div>
 		</nav>
+		<flash:messages> </flash:messages>
+
 		<div class="container" ng-view> </div>
 
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -31,9 +50,10 @@
 
 		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.js"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular-route.js"></script>
+		<script src="//raw.github.com/gtramontina/angular-flash/master/angular-flash.js"></script>
 
 		<script>
-			app = angular.module("songbrowser", ['ngRoute']);
+			app = angular.module("songbrowser", ['ngRoute', 'flash']);
 
 			var data_provider = function($http) {
 				this.$http = $http;
@@ -47,6 +67,7 @@
 					return this.$http.get("/get_songs?genre=" + genre);
 				},
 				"add_song_to_genre": function(genre, song) {
+					song = song || {};
 					return this.$http.post("/add_song?genre=" +
 					encodeURIComponent(genre) + "&title="+encodeURIComponent(song.title)+"&artist="+encodeURIComponent(song.artist)+
 					"&duration="+encodeURIComponent(song.duration)+"&audioFilename="+encodeURIComponent(song.audioFilename)+
@@ -59,25 +80,29 @@
 
 			app.factory("data", function($http) { return new data_provider($http); });
 
-			function GenreListController($scope, data) {
+			function GenreListController($scope, flash, data) {
 				$scope.genres = undefined;
-				data.list_genres().success(function(genres) { $scope.genres = genres; });
+				data.list_genres().success(function(genres) { $scope.genres = genres; }).error(function() { flash("error", "Could not list genres"); });
 			}
 
-			function GenreDetailsController($scope, data, $routeParams) {
+			function GenreDetailsController($scope, flash, data, $routeParams) {
 				$scope.songs = undefined;
-				data.get_songs_for_genre($routeParams.genre).success(function(songs) { $scope.songs = songs });
+				data.get_songs_for_genre($routeParams.genre).success(function(songs) { $scope.songs = songs }).error(function() { flash("error", "Could not list genre details"); });
 			}
 
-			function CreateSongController($scope, data) {
+			function CreateSongController($scope, flash, $location, data) {
 				$scope.update = function() {
-					data.add_song_to_genre($scope.genre, $scope.song).success(function(ignore) { console.log(ignore); $location = "#/genre" + $scope.genre; });
+					data.add_song_to_genre($scope.genre, $scope.song).success(function() { $location.path("/"); }).error(function() { flash("error", "Could not create song"); });
 				}
 			}
 
-			function CreateGenreController($scope, data) {
+			function CreateGenreController($scope, flash, $location, data) {
 				$scope.update = function() {
-					data.add_genre($scope.genre);
+					if ($scope.genre === undefined) {
+						flash("error", "Genre creation failed");
+					} else {
+						data.add_genre($scope.genre).success(function() { $location.path("/"); }).error(function() { flash("error", "Genre creation failed"); });
+					}
 				}
 			}
 
