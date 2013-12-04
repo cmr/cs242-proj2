@@ -53,7 +53,7 @@
 					"&audioFiletype="+encodeURIComponent(song.audioFiletype));
 				},
 				"add_genre": function(genre) {
-					return this.$http.post("/add_genre?genre=" + genre);
+					return this.$http.post("/add_genre?genre=" + encodeURIComponent(genre));
 				}
 			}
 
@@ -86,7 +86,7 @@
 				var genresPage   = { templateUrl: 'genre_list.html', controller: GenreListController };
 				var genrePage    = { templateUrl: 'genre_details.html', controller: GenreDetailsController };
 				var addSongPage  = { templateUrl: 'create_song.html', controller: CreateSongController };
-				var addGenrePage = { templateURL: 'add_genre.html', controller: CreateGenreController };
+				var addGenrePage = { templateUrl: 'add_genre.html', controller: CreateGenreController };
 				$routeProvider.when('/', genresPage);
 				$routeProvider.when('/genre/:genre', genrePage);
 				$routeProvider.when('/create', addSongPage);
@@ -161,8 +161,7 @@
 
 		<script type="text/ng-template" id="add_genre.html">
 			<input type="text" placeholder="alternative" ng-model="genre" />
-			<button ng-click="update{genre)">submit</button>
+			<button ng-click="update()">submit</button>
 		</script>
-
 	</body>
 </html>
