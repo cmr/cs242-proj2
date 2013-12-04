@@ -38,3 +38,9 @@ task copyStuff(type: Copy) {
 	from 'songs.db'
 	into 'build/libs'
 }
+
+task run(type: Exec) {
+	commandLine 'java', '-jar', 'build/libs/song-project-0.1.0.jar'
+}
+
+run.dependsOn(build, copyStuff)
