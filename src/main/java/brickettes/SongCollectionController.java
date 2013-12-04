@@ -31,6 +31,13 @@ public class SongCollectionController {
         return songCollection.getSongsForGenre(genre);
     }
 
+    @RequestMapping(value = "/add_genre", method = RequestMethod.POST)
+    public @ResponseBody
+    void addGenre(@RequestParam(value = "genre") String genre
+    ) {
+        songCollection.addGenre(genre);
+    }
+    
     @RequestMapping(value = "/add_song", method = RequestMethod.POST)
     public @ResponseBody
     void addSong(@RequestParam(value = "genre") String genre,
