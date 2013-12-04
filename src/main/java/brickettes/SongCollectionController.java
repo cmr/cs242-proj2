@@ -1,3 +1,8 @@
+/**
+ * @author the brickettes (Corey Richardson and Adam kimball)
+ * This class actually creates a SongCollection, and modifies it as it goes.
+ */
+
 package brickettes;
 
 import java.io.*;

@@ -1,3 +1,8 @@
+/**
+ * @author: the brickettes (Corey Richardson and Adam Kimball)
+ * SongCollection is a class that essentially collects/organizes SongBeans.
+ */
+
 package brickettes;
 
 import java.io.*;
@@ -73,7 +78,11 @@ public class SongCollection implements Serializable {
             genre_map.put(genre, s);
         }
     }
-
+    
+    /**
+    *@Param name of a genre
+    * Creates a blank genre.
+    */
     public void addGenre(String genre){
             Collection<SongBean> s = new HashSet<>();
            genre_map.put(genre, s);
