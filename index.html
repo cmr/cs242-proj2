@@ -129,7 +129,7 @@
 
 		<script type="text/ng-template" id="create_song.html">
 			<h2>Enter Song Information</h2>
-			<form novalidate role="form" class="simple-form">
+			<form novalidate ng-submit="update(song)" role="form" class="simple-form">
 				<div class="form-group">
 					<label for="songtitle">Title</label>
 					<input type="text" class="form-control" ng-model="song.title" id="songtitle" placeholder="The Safety Dance">
@@ -155,13 +155,15 @@
 					<input type="text" class="form-control" ng-model="genre" id="songartist" placeholder="Alternative">
 				</div>
 
-				<button ng-click="update(song)" type="button" class="btn btn-primary">Submit</button>
+				<button type="submit" class="btn btn-primary">Submit</button>
 			</form>
 		</script>
 
 		<script type="text/ng-template" id="add_genre.html">
-			<input type="text" placeholder="alternative" ng-model="genre" />
-			<button ng-click="update()">submit</button>
+			<form ng-submit="update()">
+				<input type="text" placeholder="alternative" ng-model="genre" />
+				<button class="btn btn-primary" type="Submit">Add Genre</button>
+			</form>
 		</script>
 	</body>
 </html>

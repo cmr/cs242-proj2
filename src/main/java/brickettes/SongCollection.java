@@ -8,7 +8,7 @@ public class SongCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final Map<String, Collection<SongBean>> genre_map = new HashMap<>();
-    
+
 
     public SongCollection() {
     }
@@ -73,7 +73,7 @@ public class SongCollection implements Serializable {
             genre_map.put(genre, s);
         }
     }
-    
+
     public void addGenre(String genre){
             Collection<SongBean> s = new HashSet<>();
            genre_map.put(genre, s);
@@ -90,7 +90,7 @@ public class SongCollection implements Serializable {
         return new HashSet<>(genre_map.get(genre));
     }
 
-   
+
     /**
      * Get the genres the collection contains.
      *
