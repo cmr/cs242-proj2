@@ -99,13 +99,13 @@ public class SongBean implements Serializable, Comparable, Cloneable {
 		if (!(obj instanceof SongBean))
 			return false;
 		SongBean other = (SongBean) obj;
-		return other.title == this.title && other.artist == this.artist && other.duration == this.duration && other.audioFiletype == this.audioFiletype && other.audioFilename == this.audioFilename;
+		return other.title.equals(this.title) && other.artist.equals(this.artist) && other.duration == this.duration && other.audioFiletype.equals(this.audioFiletype) && other.audioFilename.equals(this.audioFilename);
 	}
 
 	//This implementation of compareto will have issues if the object incorporated cannot be cast to SongBean. Not sure what we should assign for default behavior in that instance.
 	@Override
 	public int compareTo(Object obj){
-		SongBean other == (SongBean) obj;
+		SongBean other = (SongBean) obj;
 		if (this.equals(other))
 			return 0;
 		else if (this.duration < other.duration)
@@ -117,11 +117,11 @@ public class SongBean implements Serializable, Comparable, Cloneable {
 	@Override
 	public int hashCode() {
 		int hash = 17;
-		hash = 31 * hash + duration;
+		hash = 31 * hash + ( Double.valueOf(duration).hashCode() );
 		hash = hash / 2;
-		hash = 31 * hash + artist.length();
+		hash = 31 * hash + artist.hashCode();
 		hash = hash / 2;
-		hash = 31 * hash + title.length();
+		hash = 31 * hash + title.hashCode();
 		hash = hash / 2;
 		return hash;
 }	}
