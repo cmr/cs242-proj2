@@ -37,7 +37,7 @@ public class SongBean implements Serializable, Comparable, Cloneable {
 
 	/**
 	 * Create a SongBean with the given data.
-         * 
+         *
          * @param title Name of the song
          * @param artist Creator of the song
          * @param duration Length of the song (in seconds)
@@ -91,7 +91,7 @@ public class SongBean implements Serializable, Comparable, Cloneable {
 	public void setAudioFilename(String audioFilename) {
 		this.audioFilename = audioFilename;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == this)
@@ -101,7 +101,7 @@ public class SongBean implements Serializable, Comparable, Cloneable {
 		SongBean other = (SongBean) obj;
 		return other.title == this.title && other.artist == this.artist && other.duration == this.duration && other.audioFiletype == this.audioFiletype && other.audioFilename == this.audioFilename;
 	}
-	
+
 	//This implementation of compareto will have issues if the object incorporated cannot be cast to SongBean. Not sure what we should assign for default behavior in that instance.
 	@Override
 	public int compareTo(Object obj){
