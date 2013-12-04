@@ -32,3 +32,9 @@ dependencies {
 task wrapper(type: Wrapper) {
     gradleVersion = '1.8'
 }
+
+task copyStuff(type: Copy) {
+	from 'index.html'
+	from 'songs.db'
+	into 'build/libs'
+}
